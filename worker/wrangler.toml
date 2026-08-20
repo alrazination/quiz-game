@@ -1,12 +1,19 @@
 name = "quiz-game-worker"
 main = "src/index.ts"
-compatibility_date = "2024-04-03"
+compatibility_date = "2024-11-01"
 
-[durable_objects]
-bindings = [
-  { name = "GAME_ROOM", class_name = "GameRoom" }
-]
+# Non-secret configuration. Edit EVENT_NAME here any time and redeploy.
+[vars]
+EVENT_NAME = "Company Quiz Night"
+
+# The Durable Object that holds the entire live game state.
+[[durable_objects.bindings]]
+name = "GAME_ROOM"
+class_name = "GameRoom"
 
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["GameRoom"]
+
+# Secrets (SHEETS_WEBAPP_URL, SHEETS_SHARED_SECRET, HOST_PASSWORD) are NOT
+# set here. Set them with `wrangler secret put NAME` — see README.md.
