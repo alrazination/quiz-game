@@ -1,0 +1,44 @@
+name: Deploy backend to Cloudflare
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'worker/**'
+      - '.github/workflows/deploy-worker.yml'
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        working-directory: worker
+        run: npm install
+
+      - name: Deploy Worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: worker
+          command: deploy
+
+      - name: Push app secrets to the Worker
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SHEETS_WEBAPP_URL: ${{ secrets.SHEETS_WEBAPP_URL }}
+          SHEETS_SHARED_SECRET: ${{ secrets.SHEETS_SHARED_SECRET }}
+          HOST_PASSWORD: ${{ secrets.HOST_PASSWORD }}
+        run: |
+          printf '%s' "$SHEETS_WEBAPP_URL" | npx wrangler secret put SHEETS_WEBAPP_URL
+          printf '%s' "$SHEETS_SHARED_SECRET" | npx wrangler secret put SHEETS_SHARED_SECRET
+          printf '%s' "$HOST_PASSWORD" | npx wrangler secret put HOST_PASSWORD
