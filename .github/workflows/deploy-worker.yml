@@ -16,11 +16,11 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Install dependencies
         working-directory: worker
-        run: npm install
+        run: npm ci
 
       - name: Deploy Worker
         uses: cloudflare/wrangler-action@v3
@@ -39,6 +39,6 @@ jobs:
           SHEETS_SHARED_SECRET: ${{ secrets.SHEETS_SHARED_SECRET }}
           HOST_PASSWORD: ${{ secrets.HOST_PASSWORD }}
         run: |
-          printf '%s' "$SHEETS_WEBAPP_URL" | npx wrangler secret put SHEETS_WEBAPP_URL
-          printf '%s' "$SHEETS_SHARED_SECRET" | npx wrangler secret put SHEETS_SHARED_SECRET
-          printf '%s' "$HOST_PASSWORD" | npx wrangler secret put HOST_PASSWORD
+          if [ -n "$SHEETS_WEBAPP_URL" ]; then printf '%s' "$SHEETS_WEBAPP_URL" | npx wrangler secret put SHEETS_WEBAPP_URL; fi
+          if [ -n "$SHEETS_SHARED_SECRET" ]; then printf '%s' "$SHEETS_SHARED_SECRET" | npx wrangler secret put SHEETS_SHARED_SECRET; fi
+          if [ -n "$HOST_PASSWORD" ]; then printf '%s' "$HOST_PASSWORD" | npx wrangler secret put HOST_PASSWORD; fi
