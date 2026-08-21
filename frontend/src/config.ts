@@ -4,7 +4,7 @@
 
 // Your Cloudflare Worker URL, no trailing slash.
 // You'll get this after `wrangler deploy` (Phase: Deploy backend).
-export const WORKER_URL = 'https://quiz-game-worker.YOUR-SUBDOMAIN.workers.dev';
+export const WORKER_URL = 'https://quiz-game-worker.razinabdullah52.workers.dev';
 
 // Shown on screen before the server confirms the real event name.
 export const EVENT_NAME_FALLBACK = 'Company Quiz Night';
