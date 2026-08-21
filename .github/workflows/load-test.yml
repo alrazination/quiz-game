@@ -1,0 +1,38 @@
+name: Load test
+
+# Trigger this by hand from the Actions tab: Actions -> Load test -> Run
+# workflow. Pick how many fake players to simulate. Runs entirely on
+# GitHub's servers against your real deployed Worker.
+on:
+  workflow_dispatch:
+    inputs:
+      players:
+        description: 'Number of simulated players'
+        required: true
+        default: '100'
+        type: choice
+        options: ['100', '500', '1000', '2000']
+      worker_url:
+        description: 'Your Worker wss:// URL, e.g. wss://quiz-game-worker.you.workers.dev'
+        required: true
+
+jobs:
+  simulate:
+    runs-on: ubuntu-latest
+    # This job runs for up to 5 minutes so you have time to watch the host
+    # screen react in real time before it stops.
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        working-directory: scripts
+        run: npm ci
+
+      - name: Run simulation
+        working-directory: scripts
+        run: timeout 300 node simulate.js --url "${{ inputs.worker_url }}" --players "${{ inputs.players }}" || true
