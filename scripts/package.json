@@ -1,0 +1,14 @@
+{
+  "name": "quiz-game-scripts",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "ws": "^8.18.0"
+  },
+  "scripts": {
+    "simulate:100": "node simulate.js --players 100",
+    "simulate:500": "node simulate.js --players 500",
+    "simulate:1000": "node simulate.js --players 1000",
+    "simulate:2000": "node simulate.js --players 2000"
+  }
+}
